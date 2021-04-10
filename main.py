@@ -1,3 +1,6 @@
+import glob
+import os
+
 from trie import Trie
 
 trie = Trie()
@@ -9,3 +12,18 @@ trie.add('chunky', 'chunky1.xml')
 print(trie.trie)
 print(trie.get('chunk'))
 print(trie.get('chunky'))
+
+
+def index_emails(path_to_directory):
+    trie = Trie()
+
+    for path in glob.glob(os.path.join(path_to_directory, '**/*.'), recursive=True):
+        with open(path, encoding='cp1251') as f:
+            for line in f.readlines():
+                for word in line.split():
+                    trie.add(word, path)
+
+    return trie
+
+
+index_emails('skilling-j')
