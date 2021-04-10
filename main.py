@@ -3,26 +3,17 @@ import os
 
 from trie import Trie
 
-# trie = Trie()
-#
-# trie.add('chunk', 'chunk.xml')
-# trie.add('chunky', 'chunky.xml')
-# trie.add('chunky', 'chunky1.xml')
-#
-# print(trie.trie)
-# print(trie.get('chunk'))
-# print(trie.get('chunky'))
-
 
 def index_emails(path_to_directory):
     trie = Trie()
 
     for path in glob.glob(os.path.join(path_to_directory, '**/*.'), recursive=True):
         with open(path, encoding='cp1251') as f:
-            for line in f.readlines():
-                for word in line.split():
-                    normalized = word.lower()
-                    trie.add(normalized, path)
+            content = f.read()
+            content = content[content.index('\n\n'):]
+            for word in content.split():
+                normalized = word.lower().strip()
+                trie.add(normalized, path)
 
     return trie
 
@@ -30,6 +21,22 @@ def index_emails(path_to_directory):
 def test(word, trie):
     return trie.get(word)
 
+def main():
+    # trie = Trie()
+    #
+    # trie.add('chunk', 'chunk.xml')
+    # trie.add('chunky', 'chunky.xml')
+    # trie.add('chunky', 'chunky1.xml')
+    #
+    # print(trie.trie)
+    # print(trie.get('chunk'))
+    # print(trie.get('chunky'))
 
-trie = index_emails('skilling-j')
-print(test('banned', trie))
+    trie = index_emails('skilling-j')
+    print(test('biscuit', trie))  # Test for no word in corpus
+    print(test('mime', trie))  # Test for email header value
+    print(test('case', trie))  # Test for regular word
+
+
+if __name__ == '__main__':
+    main()
