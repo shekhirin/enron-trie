@@ -13,9 +13,9 @@ class Trie:
             node = node[ch]
 
         if self.PATH not in node:
-            node[self.PATH] = []
+            node[self.PATH] = set()
 
-        node[self.PATH].append(path)
+        node[self.PATH].add(path)
 
     def get(self, word):
         node = self.trie
