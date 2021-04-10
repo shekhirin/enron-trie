@@ -2,6 +2,7 @@ import email
 import glob
 import os
 import string
+from time import time
 
 from trie import Trie
 
@@ -33,7 +34,7 @@ def index_emails(path_to_directory):
 
 
 def test(word, trie):
-    return trie.get(word.lower().strip())
+    return trie.get(normalize(word))
 
 
 def main():
@@ -47,7 +48,28 @@ def main():
     # print(trie.get('chunk'))
     # print(trie.get('chunky'))
 
+    print('Indexing emails...', end=' ')
+    start = time()
     trie = index_emails('skilling-j')
+    end = time()
+    print(f'Done in {end-start:.2f}s')
+
+    def walk(node):
+        for ch in node:
+            if ch == trie.PATH:
+                for path in node[ch]:
+                    yield path
+                continue
+            yield from walk(node[ch])
+
+    print()
+
+    trie_paths = list(walk(trie.trie))
+    print(f'Total in dir: {len(glob.glob("skilling-j/**/*.", recursive=True))} paths')
+    print(f'Total in trie: {len(trie_paths)} paths')
+    print(f'Unique in trie: {len(set(trie_paths))} paths')
+
+    print()
 
     # Test for no word in corpus
     biscuit = test('biscuit', trie)
