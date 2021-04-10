@@ -1,7 +1,13 @@
+import email
 import glob
 import os
+import string
 
 from trie import Trie
+
+
+def normalize(word):
+    return word.lower().strip(string.whitespace + string.punctuation)
 
 
 def index_emails(path_to_directory):
@@ -10,16 +16,25 @@ def index_emails(path_to_directory):
     for path in glob.glob(os.path.join(path_to_directory, '**/*.'), recursive=True):
         with open(path, encoding='cp1251') as f:
             content = f.read()
-            content = content[content.index('\n\n'):]
-            for word in content.split():
-                normalized = word.lower().strip()
-                trie.add(normalized, path)
+            parsed = email.message_from_string(content)
+
+            for (header, value) in parsed.items():
+                for word in value.split():
+                    normalized = normalize(word)
+                    if normalized:
+                        trie.add(normalize(word), path)
+
+            for word in parsed.get_payload().split():
+                normalized = normalize(word)
+                if normalized:
+                    trie.add(normalized, path)
 
     return trie
 
 
 def test(word, trie):
     return trie.get(word.lower().strip())
+
 
 def main():
     # trie = Trie()
@@ -33,9 +48,17 @@ def main():
     # print(trie.get('chunky'))
 
     trie = index_emails('skilling-j')
-    print(test('biscuit', trie))  # Test for no word in corpus
-    print(test('mime', trie))  # Test for email header value
-    print(test('bosphorus', trie))  # Test for regular word
+
+    # Test for no word in corpus
+    biscuit = test('biscuit', trie)
+    print(len(biscuit) == 0)
+
+    # Test for email header value with trailing ...
+    investments = test('investments', trie)
+    print('skilling-j/deleted_items/3.' in investments)
+
+    # Test for regular word
+    print(test('bosphorus', trie))
 
 
 if __name__ == '__main__':
