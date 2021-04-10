@@ -1,7 +1,9 @@
+END = None
+
+
 class Trie:
     def __init__(self):
         self.trie = {}
-        self.PATH = 'PATH'
 
     def add(self, word, path):
         node = self.trie
@@ -12,10 +14,10 @@ class Trie:
 
             node = node[ch]
 
-        if self.PATH not in node:
-            node[self.PATH] = set()
+        if END not in node:
+            node[END] = set()
 
-        node[self.PATH].add(path)
+        node[END].add(path)
 
     def get(self, word):
         node = self.trie
@@ -26,8 +28,7 @@ class Trie:
 
             node = node[ch]
 
-        if self.PATH not in node:
+        if END not in node:
             return []
 
-        return node[self.PATH]
-
+        return node[END]
