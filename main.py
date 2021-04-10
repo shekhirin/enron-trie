@@ -19,7 +19,7 @@ def index_emails(path_to_directory):
 
 
 def test(word, trie):
-    return trie.get(word)
+    return trie.get(word.lower().strip())
 
 def main():
     # trie = Trie()
@@ -35,7 +35,7 @@ def main():
     trie = index_emails('skilling-j')
     print(test('biscuit', trie))  # Test for no word in corpus
     print(test('mime', trie))  # Test for email header value
-    print(test('case', trie))  # Test for regular word
+    print(test('bosphorus', trie))  # Test for regular word
 
 
 if __name__ == '__main__':
